@@ -18,14 +18,17 @@ Page({
       { extClass: 'removeBtn', text: '删除', src: 'Images/icon_del.svg' }
     ],
   },
-
-  //页面加载时运行
-  async onShow() {
-    await wx.cloud.callFunction({ name: 'getList', data: { list: getApp().globalData.collectionMissionList } }).then(data => {
+  async getList() {
+    return wx.cloud.callFunction({ name: 'getList', data: { list: getApp().globalData.collectionMissionList } }).then(data => {
       this.setData({ allMissions: data.result.data })
       this.filterMission()
       this.getScreenSize()
     })
+  },
+
+  //页面加载时运行
+  async onShow() {
+    await this.getList();
   },
 
   //获取页面大小
@@ -130,22 +133,29 @@ Page({
 
         //处理删除按钮点击事件
         else if (index === 2) {
-          wx.cloud.callFunction({ name: 'deleteElement', data: { _id: mission._id, list: getApp().globalData.collectionMissionList } })
-          //更新本地数据
-          if (isUpper) this.data.unfinishedMissions.splice(missionIndex, 1)
-          else this.data.finishedMissions.splice(missionIndex, 1)
-          //如果删除完所有事项，刷新数据，让页面显示无事项图片
-          if (this.data.unfinishedMissions.length === 0 && this.data.finishedMissions.length === 0) {
-            this.setData({
-              allMissions: [],
-              unfinishedMissions: [],
-              finishedMissions: []
-            })
-          }
+          await wx.cloud.callFunction({ name: 'deleteElement', data: { _id: mission._id, list: getApp().globalData.collectionMissionList } })
+
+          /**
+           * 确认操作成功再删除本地数据
+           */
+          // // //更新本地数据
+          // if (isUpper) this.data.unfinishedMissions.splice(missionIndex, 1)
+          // else this.data.finishedMissions.splice(missionIndex, 1)
+          // //如果删除完所有事项，刷新数据，让页面显示无事项图片
+          // if (this.data.unfinishedMissions.length === 0 && this.data.finishedMissions.length === 0) {
+          //   this.setData({
+          //     allMissions: [],
+          //     unfinishedMissions: [],
+          //     finishedMissions: []
+          //   })
+          // }
         }
 
         //触发显示更新
-        this.setData({ finishedMissions: this.data.finishedMissions, unfinishedMissions: this.data.unfinishedMissions })
+        console.log('等待刷新');
+        await this.getList();
+        console.log('刷新');
+        // this.setData({ finishedMissions: this.data.finishedMissions, unfinishedMissions: this.data.unfinishedMissions })
 
         //如果编辑的不是自己的任务，显示提醒
       } else {
