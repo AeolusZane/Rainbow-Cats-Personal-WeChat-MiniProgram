@@ -1,7 +1,7 @@
 // 云函数入口文件
 const cloud = require('wx-server-sdk');
 const meId = "ou-ei69Rf_8HDxtcL7-xreUabzGg";
-const herId = "ou-ei69Rf_8HDxtcL7-xreUabzGg";
+const herId = "ou-ei6ykAmy3LndC12ry6ozLmVQ0";
 const me = "张敬峥";
 const her = "王晓铃";
 

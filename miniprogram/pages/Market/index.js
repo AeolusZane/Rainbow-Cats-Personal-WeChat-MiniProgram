@@ -144,7 +144,7 @@ Page({
       //处理完成点击事件
       if (index === 0) {
         if (isUpper) {
-          this.buyItem(element)
+          await this.buyItem(element)
         } else {
           wx.showToast({
             title: '物品已被购买',

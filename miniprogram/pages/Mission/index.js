@@ -114,7 +114,7 @@ Page({
       //处理完成点击事件
       if (index === 0) {
         if (isUpper) {
-          this.finishMission(element)
+          await this.finishMission(element)
         } else {
           wx.showToast({
             title: '任务已经完成',
@@ -126,29 +126,12 @@ Page({
       } else if (mission._openid === openid.result) {
         //处理星标按钮点击事件
         if (index === 1) {
-          wx.cloud.callFunction({ name: 'editStar', data: { _id: mission._id, list: getApp().globalData.collectionMissionList, value: !mission.star } })
-          //更新本地数据
-          mission.star = !mission.star
+          await wx.cloud.callFunction({ name: 'editStar', data: { _id: mission._id, list: getApp().globalData.collectionMissionList, value: !mission.star } })
         }
 
         //处理删除按钮点击事件
         else if (index === 2) {
-          await wx.cloud.callFunction({ name: 'deleteElement', data: { _id: mission._id, list: getApp().globalData.collectionMissionList } })
-
-          /**
-           * 确认操作成功再删除本地数据
-           */
-          // // //更新本地数据
-          // if (isUpper) this.data.unfinishedMissions.splice(missionIndex, 1)
-          // else this.data.finishedMissions.splice(missionIndex, 1)
-          // //如果删除完所有事项，刷新数据，让页面显示无事项图片
-          // if (this.data.unfinishedMissions.length === 0 && this.data.finishedMissions.length === 0) {
-          //   this.setData({
-          //     allMissions: [],
-          //     unfinishedMissions: [],
-          //     finishedMissions: []
-          //   })
-          // }
+          await wx.cloud.callFunction({ name: 'deleteElement', data: { _id: mission._id, list: getApp().globalData.collectionMissionList } });
         }
 
         //触发显示更新
