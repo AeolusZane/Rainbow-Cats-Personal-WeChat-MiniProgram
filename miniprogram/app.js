@@ -1,15 +1,16 @@
+import { meId, herId, me, her } from './pages/config.js'
 App({
   async onLaunch() {
     this.initcloud()
 
     this.globalData = {
       //记录使用者的openid
-      _openidA: 'onsgK5XqCMLbYXudVgh3xjV4kgWw',
-      _openidB: 'onsgK5Zc7t-bFdnFk3_krqdIRZYY',
+      _openidA: meId,
+      _openidB: herId,
 
       //记录使用者的名字
-      userA: '卡比',
-      userB: '瓦豆',
+      userA: me,
+      userB: her,
 
       //用于存储待办记录的集合名称
       collectionMissionList: 'MissionList',
@@ -41,7 +42,7 @@ App({
     } else { // 如果文件中 envlist 不存在，提示要配置环境
       this.cloud = () => {
         wx.showModal({
-          content: '无云开发环境', 
+          content: '无云开发环境',
           showCancel: false
         })
         throw new Error('无云开发环境')
