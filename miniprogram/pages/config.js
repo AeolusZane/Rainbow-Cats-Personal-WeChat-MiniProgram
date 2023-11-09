@@ -12,3 +12,16 @@ export async function getCurrentName() {
     const currentId = await getOpenId();
     return currentId === meId ? me : her;
 }
+
+export function subscribeMsgSuccess() {
+    wx.showModal({
+        title: '发送成功',
+        content: '请返回微信主界面查看',
+        showCancel: false,
+        success(res) {
+            if (res.confirm) {
+                wx.navigateBack()
+            }
+        }
+    });
+}

@@ -135,10 +135,7 @@ Page({
         }
 
         //触发显示更新
-        console.log('等待刷新');
         await this.getList();
-        console.log('刷新');
-        // this.setData({ finishedMissions: this.data.finishedMissions, unfinishedMissions: this.data.unfinishedMissions })
 
         //如果编辑的不是自己的任务，显示提醒
       } else {
@@ -158,14 +155,11 @@ Page({
     const mission = this.data.unfinishedMissions[missionIndex]
 
     await wx.cloud.callFunction({ name: 'getOpenId' }).then(async openid => {
+      console.log(openid, '🐱', mission._openid);
       if (mission._openid != openid.result) {
         //完成对方任务，奖金打入对方账号
-        await wx.cloud.callFunction({ name: 'editAvailable', data: { _id: mission._id, value: false, list: getApp().globalData.collectionMissionList } })
-        await wx.cloud.callFunction({ name: 'editCredit', data: { _openid: mission._openid, value: mission.credit, list: getApp().globalData.collectionUserList } })
-
-        //触发显示更新
-        mission.available = false
-        this.filterMission()
+        await wx.cloud.callFunction({ name: 'editAvailable', data: { _id: mission._id, value: false, list: getApp().globalData.collectionMissionList } });
+        await wx.cloud.callFunction({ name: 'editCredit', data: { _openid: mission._openid, value: mission.credit, list: getApp().globalData.collectionUserList } });
 
         //显示提示
         wx.showToast({

@@ -1,4 +1,4 @@
-import { meId, templateId } from "../config";
+import { meId, templateId, subscribeMsgSuccess } from "../config";
 Page({
   //增加消息接收与发送功能
   async handleTap() {
@@ -6,40 +6,36 @@ Page({
     ok && await this.sendSubscribeMessage();
   },
   //发送消息
-  sendSubscribeMessage(e) {
-    //调用云函数，
-    wx.cloud.callFunction({
-      name: 'information',
-      //data是用来传给云函数event的数据，你可以把你当前页面获取消息填写到服务通知里面
-      data: {
-        action: 'sendSubscribeMessage',
-        templateId: templateId,//这里我就直接把模板ID传给云函数了
-        me: 'Test_me',
-        name: 'Test_activity',
-        _openid: meId//填入自己的openid
-      },
-      success: res => {
-        console.warn('[云函数] [openapi] subscribeMessage.send 调用成功：', res)
-        wx.showModal({
-          title: '发送成功',
-          content: '请返回微信主界面查看',
-          showCancel: false,
-        })
-        wx.showToast({
-          title: '发送成功，请返回微信主界面查看',
-        })
-        this.setData({
-          subscribeMessageResult: JSON.stringify(res.result)
-        })
-      },
-      fail: err => {
-        wx.showToast({
-          icon: 'none',
-          title: '调用失败',
-        })
-        console.error('[云函数] [openapi] subscribeMessage.send 调用失败：', err)
-      }
-    })
+  async sendSubscribeMessage(e) {
+    // const currentId = await getOpenId();
+    await new Promise(resolve => {
+      wx.cloud.callFunction({
+        name: 'information',
+        //data是用来传给云函数event的数据，你可以把你当前页面获取消息填写到服务通知里面
+        data: {
+          action: 'sendSubscribeMessage',
+          templateId: templateId,//这里我就直接把模板ID传给云函数了
+          me: 'Test_me',
+          name: 'Test_activity',
+          _openid: meId//填入自己的openid
+        },
+        success: res => {
+          console.warn('[云函数] [openapi] subscribeMessage.send 调用成功：', res);
+          this.setData({
+            subscribeMessageResult: JSON.stringify(res.result)
+          })
+          resolve(true);
+        },
+        fail: err => {
+          wx.showToast({
+            icon: 'none',
+            title: '调用失败',
+          })
+          console.error('[云函数] [openapi] subscribeMessage.send 调用失败：', err);
+          resolve(false)
+        },
+      })
+    });
   },
   //保存正在编辑的任务
   data: {
@@ -148,18 +144,7 @@ Page({
       })
       return false
     } else {
-      await wx.cloud.callFunction({ name: 'addElement', data: this.data }).then(
-        () => {
-          wx.showToast({
-            title: '添加成功',
-            icon: 'success',
-            duration: 1000
-          })
-        }
-      )
-      setTimeout(function () {
-        wx.navigateBack()
-      }, 1000);
+      await wx.cloud.callFunction({ name: 'addElement', data: this.data }).then(subscribeMsgSuccess);
       return true
     }
   },
